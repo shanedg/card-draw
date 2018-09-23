@@ -1,0 +1,7 @@
+<div *ngIf="currentHand">
+  <ul>
+    <li *ngFor="let card of currentHand.cards">
+      {{card.value}} of {{ card.suit }}s
+    </li>
+  </ul>
+</div>

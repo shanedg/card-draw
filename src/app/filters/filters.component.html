@@ -1,0 +1,62 @@
+<div class="filters-component">
+  <strong>Select suits:</strong>
+  <mat-form-field>
+    <!-- <mat-label>Select suits:</mat-label> -->
+    <mat-select
+      [(ngModel)]="selectedFilters.suits"
+      multiple
+      (selectionChange)="updateFilterSelections($event)"
+    >
+      <mat-option value="spade">spade</mat-option>
+      <mat-option value="heart">heart</mat-option>
+      <mat-option value="club">club</mat-option>
+      <mat-option value="diamond">diamond</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <strong>
+    Max card value: {{this.formatFaceLabel(selectedFilters.maxCardValue)}}
+  </strong>
+  <mat-slider
+    [(ngModel)]="selectedFilters.maxCardValue"
+    thumbLabel
+    tickInterval="1"
+    min="0"
+    max="12"
+    step="1"
+    value="1"
+    [displayWith]="formatFaceLabel"
+    (change)="updateFilterSelections($event)"
+  ></mat-slider>
+
+  <strong>
+    Min card value: {{this.formatFaceLabel(selectedFilters.minCardValue)}}
+  </strong>
+  <mat-slider
+    [(ngModel)]="selectedFilters.minCardValue"
+    thumbLabel
+    tickInterval="1"
+    min="0"
+    max="12"
+    step="1"
+    value="1"
+    [displayWith]="formatFaceLabel"
+    (change)="updateFilterSelections($event)"
+  ></mat-slider>
+
+  <strong>Hand size to draw: {{selectedFilters.cardsInHand}} cards</strong>
+  <mat-slider
+    [(ngModel)]="selectedFilters.cardsInHand"
+    thumbLabel
+    tickInterval="1"
+    min="1"
+    max="{{this.maxHandSize()}}"
+    step="1"
+    value="1"
+  ></mat-slider>
+
+  <!-- Debugging -->
+  <!-- <p>suits: {{ selectedFilters.suits}}, # cards: {{ selectedFilters.cardsInHand}}, max card value: {{ selectedFilters.maxCardValue}}, min card value: {{ selectedFilters.minCardValue}}</p> -->
+
+  <button (click)="setFilter()">Draw Hand</button>
+</div>
