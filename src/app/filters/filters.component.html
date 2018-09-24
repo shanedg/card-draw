@@ -1,7 +1,6 @@
 <div class="filters-component">
   <strong>Select suits:</strong>
   <mat-form-field>
-    <!-- <mat-label>Select suits:</mat-label> -->
     <mat-select
       [(ngModel)]="selectedFilters.suits"
       multiple
@@ -55,8 +54,10 @@
     value="1"
   ></mat-slider>
 
+  <strong *ngIf="this.error != null" style="color: red">*{{this.error}}</strong>
+
   <!-- Debugging -->
-  <!-- <p>suits: {{ selectedFilters.suits}}, # cards: {{ selectedFilters.cardsInHand}}, max card value: {{ selectedFilters.maxCardValue}}, min card value: {{ selectedFilters.minCardValue}}</p> -->
+  <!-- <p>suits: {{ selectedFilters.suits}}, # cards: {{ selectedFilters.cardsInHand}}, max card value: {{ selectedFilters.maxCardValue}}, min card value: {{ selectedFilters.minCardValue}}<br>error: {{this.error}}</p> -->
 
   <button (click)="setFilter()">Draw Hand</button>
 </div>

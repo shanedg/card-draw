@@ -26,9 +26,6 @@ import 'hammerjs';
     MatSelectModule,
     MatSliderModule,
   ],
-  schemas: [
-    // NO_ERRORS_SCHEMA
-  ],
   providers: [],
   bootstrap: [AppComponent]
 })
