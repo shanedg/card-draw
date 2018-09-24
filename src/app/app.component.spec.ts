@@ -1,10 +1,25 @@
 import { TestBed, async } from '@angular/core/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSliderModule } from '@angular/material/slider';
+import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
+import { FiltersComponent } from './filters/filters.component';
+import { HandComponent } from './hand/hand.component';
+
 describe('AppComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
+      imports: [
+        BrowserAnimationsModule,
+        FormsModule,
+        MatSelectModule,
+        MatSliderModule
+      ],
       declarations: [
-        AppComponent
+        AppComponent,
+        FiltersComponent,
+        HandComponent
       ],
     }).compileComponents();
   }));

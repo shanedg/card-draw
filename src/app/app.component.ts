@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Filters } from './filters';
+import 'hammerjs';
 
 @Component({
   selector: 'app-root',
@@ -8,12 +9,13 @@ import { Filters } from './filters';
 })
 export class AppComponent {
   title = 'card-draw';
-
   filters: Filters;
 
   recieveFilters($event) {
-    // Treat `this.filters` as immutable so that this change
-    // triggers `ngOnChanges` in children (hand component) that receive it.
+    /*
+     * Treat  `this.filters` as immutable so that this change
+     * triggers `ngOnChanges` in children that receive it, i.e. app-hand.
+     */
     this.filters = {
       ...$event
     };

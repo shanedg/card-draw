@@ -1,6 +1,9 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { Filters } from '../filters';
 
+// import { MatSelectModule } from '@angular/material/select';
+// import { MatSliderModule } from '@angular/material/slider';
+
 @Component({
   selector: 'app-filters',
   templateUrl: './filters.component.html',
