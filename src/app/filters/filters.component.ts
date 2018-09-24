@@ -1,9 +1,6 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { Filters } from '../filters';
 
-// import { MatSelectModule } from '@angular/material/select';
-// import { MatSliderModule } from '@angular/material/slider';
-
 @Component({
   selector: 'app-filters',
   templateUrl: './filters.component.html',
@@ -16,6 +13,8 @@ export class FiltersComponent implements OnInit {
     maxCardValue: 12,
     minCardValue: 0
   };
+
+  error: string|null;
 
   constructor() { }
 
@@ -75,11 +74,11 @@ export class FiltersComponent implements OnInit {
    */
   filtersSatisfiable(filters) {
     if (filters.minCardValue > filters.maxCardValue) {
-      console.warn('error: min card value must be less than or equal to max card value');
+      this.error = 'min card value must be less than or equal to max card value';
       return false;
     }
     if (filters.suits.length === 0) {
-      console.warn('error: no suits selected');
+      this.error = 'no suits selected';
       return false;
     }
 
@@ -88,12 +87,13 @@ export class FiltersComponent implements OnInit {
      * BUT important while debugging to keep unsatisfiable filter conditions
      * in the do-while loop from locking up the browser.
      */
-    const maxHandSize = this.maxHandSize();
-    if (filters.cardsInHand > maxHandSize) {
-      console.warn('error: not possible to draw that many cards with current filters');
-      return false;
-    }
+    // const maxHandSize = this.maxHandSize();
+    // if (filters.cardsInHand > maxHandSize) {
+    //   this.error = 'not possible to draw that many cards with current filters';
+    //   return false;
+    // }
 
+    this.error = null;
     return true;
   }
 
@@ -110,7 +110,6 @@ export class FiltersComponent implements OnInit {
    * in sync with multi select/slider updates.
    */
   updateFilterSelections($event) {
-    console.log('update filter selections...');
     const maxHand = this.maxHandSize();
 
     // Important to adjust actual `cardsInHand` var as well.
