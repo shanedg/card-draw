@@ -30,7 +30,7 @@ export class HandComponent implements OnChanges {
       // we've chosen enough that satisfy filters to fill the hand.
       do {
         // Choose random deck index
-        const randomCard = Math.floor(Math.random() * 52);
+        const randomCard = Math.floor(Math.random() * 52 * this.filters.numDecks);
 
         // Check against deck indices already in hand
         if (handIndices.indexOf(randomCard) < 0) {

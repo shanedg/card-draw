@@ -3,4 +3,5 @@ export class Filters {
   cardsInHand: number;
   maxCardValue: number;
   minCardValue: number;
+  numDecks: number;
 }

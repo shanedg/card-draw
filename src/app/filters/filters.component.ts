@@ -11,7 +11,8 @@ export class FiltersComponent implements OnInit {
     suits: ['spade','heart','club','diamond'],
     cardsInHand: 7,
     maxCardValue: 12,
-    minCardValue: 0
+    minCardValue: 0,
+    numDecks: 1
   };
 
   error: string|null;
@@ -62,7 +63,7 @@ export class FiltersComponent implements OnInit {
         // This shouldn't ever happen.
         default:
           value = null;
-          break;            
+          break;
       }
     }
 
@@ -102,7 +103,7 @@ export class FiltersComponent implements OnInit {
    * given the current filters state.
    */
   maxHandSize() {
-    return this.selectedFilters.suits.length * ((this.selectedFilters.maxCardValue + 1) - this.selectedFilters.minCardValue);
+    return this.selectedFilters.numDecks * this.selectedFilters.suits.length * ((this.selectedFilters.maxCardValue + 1) - this.selectedFilters.minCardValue);
   }
 
   /*
