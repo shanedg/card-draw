@@ -10,7 +10,7 @@ import { Filters } from '../filters';
 @Component({
   selector: 'app-hand',
   templateUrl: './hand.component.html',
-  // styleUrls: ['./hand.component.css']
+  styleUrls: ['./hand.component.css']
 })
 export class HandComponent implements OnChanges {
   @Input() filters: Filters;

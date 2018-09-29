@@ -1,0 +1,39 @@
+.card-contain {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+}
+
+.card-contain .card {
+  position: relative;
+  width: 200px;
+  height: 300px;
+  margin: 1rem;
+  border: 2px solid #ccc;
+}
+
+.card-contain .card > * {
+  position: absolute;
+}
+
+.card-contain .card .top {
+  top: 1rem;
+}
+
+.card-contain .card .bottom {
+  bottom: 1rem;
+}
+
+.card-contain .card .left {
+  left: 1rem;
+}
+
+.card-contain .card .right {
+  right: 1rem;
+}
+
+.card-contain .card .center {
+  top: 45%;
+  left: 45%;
+}

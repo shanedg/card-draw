@@ -1,7 +1,9 @@
-<div *ngIf="currentHand">
-  <ul>
-    <li *ngFor="let card of currentHand.cards">
-      {{card.value}} of {{ card.suit }}s
-    </li>
-  </ul>
+<div class="card-contain" *ngIf="currentHand">
+  <div class="card" *ngFor="let card of currentHand.cards">
+    <span class="top left">{{card.value}}</span>
+    <span class="top right">{{card.suit}}</span>
+    <span class="center">i</span>
+    <span class="bottom left">{{card.suit}}</span>
+    <span class="bottom right">{{card.value}}</span>
+  </div>
 </div>
