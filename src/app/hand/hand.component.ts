@@ -22,36 +22,45 @@ export class HandComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (this.filters != undefined) {
 
-      // Define objects to hold card selections we've already made
-      const handIndices = [];
+      let handPossibles = [];
+      // for (let i = 0; i < this.filters.cardsInHand; i++) {
+      for (let i = 0; i < (this.filters.numDecks * 52); i++) {
+        handPossibles.push(i);
+      }
+
       const hand = [];
 
       // Do-while to iterate over candidate random cards until
       // we've chosen enough that satisfy filters to fill the hand.
       do {
         // Choose random deck index
-        const randomCard = Math.floor(Math.random() * 52 * this.filters.numDecks);
+        const randomIndex = Math.floor(Math.random() * handPossibles.length);
+        const randomCard = handPossibles[randomIndex];
 
-        // Check against deck indices already in hand
-        if (handIndices.indexOf(randomCard) < 0) {
-          // Translate random deck index to suit and value
-          const suit = this.mapIntToSuit(randomCard);
-          const value = randomCard % 13;
+        // Translate random deck index to suit and value
+        const suit = this.mapIntToSuit(randomCard);
+        const value = randomCard % 13;
 
-          // Add to hand if candidate passes filter criteria
-          if (this.filters.suits.indexOf(suit) > -1
-            && value >= this.filters.minCardValue
-            && value <= this.filters.maxCardValue
-          ) {
-            // Push card indices and card objects separately.
-            handIndices.push(randomCard);
-            hand.push({
-              suit,
-              value: this.mapIntToCardValue(randomCard)
-            });
-          }
+        // Add to hand if candidate passes filter criteria
+        if (this.filters.suits.indexOf(suit) > -1
+          && value >= this.filters.minCardValue
+          && value <= this.filters.maxCardValue
+        ) {
+          // Push card indices and card objects separately.
+          hand.push({
+            suit,
+            value: this.mapIntToCardValue(randomCard)
+          });
         }
-      } while(handIndices.length < this.filters.cardsInHand);
+
+        if (randomIndex === 0) {
+          handPossibles.shift();
+        } else if (randomIndex === (handPossibles.length - 1)) {
+          handPossibles.pop();
+        } else {
+          handPossibles = handPossibles.slice(0, randomIndex).concat(handPossibles.slice(randomIndex + 1, handPossibles.length));
+        }
+      } while(hand.length < this.filters.cardsInHand);
 
       // Set hand to value of new, generated hand.
       this.currentHand.cards = hand;
@@ -62,7 +71,7 @@ export class HandComponent implements OnChanges {
    * Translate card's deck index to a suit.
    */
   mapIntToSuit(index: number) {
-    // Future-proof against drawing from multiple decks.
+    // Normalize index if drawing from multiple decks.
     const normalizedIndex = index % 52;
 
     if (normalizedIndex >= 0 && normalizedIndex < 13) {
