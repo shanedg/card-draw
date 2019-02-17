@@ -1,8 +1,7 @@
 import {
   Component,
-  OnChanges,
-  SimpleChanges,
-  Input
+  Input,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { Hand } from '../hand';
 import { Filters } from '../filters';
@@ -10,68 +9,89 @@ import { Filters } from '../filters';
 @Component({
   selector: 'app-hand',
   templateUrl: './hand.component.html',
-  styleUrls: ['./hand.component.css']
+  styleUrls: ['./hand.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HandComponent implements OnChanges {
+export class HandComponent {
+
   @Input() filters: Filters;
 
-  currentHand: Hand = {
-    cards: null
-  };
-
-  ngOnChanges(changes: SimpleChanges) {
+  public get currentHand(): Hand {
     if (this.filters != undefined) {
+      const hand = this.buildHand();
 
-      let handPossibles = [];
-      // for (let i = 0; i < this.filters.cardsInHand; i++) {
-      for (let i = 0; i < (this.filters.numDecks * 52); i++) {
-        handPossibles.push(i);
-      }
-
-      const hand = [];
-
-      // Do-while to iterate over candidate random cards until
-      // we've chosen enough that satisfy filters to fill the hand.
-      do {
-        // Choose random deck index
-        const randomIndex = Math.floor(Math.random() * handPossibles.length);
-        const randomCard = handPossibles[randomIndex];
-
-        // Translate random deck index to suit and value
-        const suit = this.mapIntToSuit(randomCard);
-        const value = randomCard % 13;
-
-        // Add to hand if candidate passes filter criteria
-        if (this.filters.suits.indexOf(suit) > -1
-          && value >= this.filters.minCardValue
-          && value <= this.filters.maxCardValue
-        ) {
-          // Push card indices and card objects separately.
-          hand.push({
-            suit,
-            value: this.mapIntToCardValue(randomCard)
-          });
-        }
-
-        if (randomIndex === 0) {
-          handPossibles.shift();
-        } else if (randomIndex === (handPossibles.length - 1)) {
-          handPossibles.pop();
-        } else {
-          handPossibles = handPossibles.slice(0, randomIndex).concat(handPossibles.slice(randomIndex + 1, handPossibles.length));
-        }
-      } while(hand.length < this.filters.cardsInHand);
-
-      // Set hand to value of new, generated hand.
-      this.currentHand.cards = hand;
+      return {
+        cards: hand,
+      };
     }
+
+    return {
+      cards: null,
+    };
   }
 
-  /*
-   * Translate card's deck index to a suit.
+  /**
+   * Generate a hand based on filter choices from UI.
+   */
+  buildHand() {
+    const decks = this.filters.numDecks;
+    const suits = this.filters.suits;
+    const minCard = this.filters.minCardValue;
+    const maxCard = this.filters.maxCardValue;
+    const cardsInHand = this.filters.cardsInHand;
+
+    let handCandidates = [];
+    for (let i = 0; i < (decks * 52); i++) {
+      handCandidates.push(i);
+    }
+
+    const hand = [];
+
+    do {
+      // Choose random deck index
+      const randomIndex = Math.floor(Math.random() * handCandidates.length);
+      const randomCard = handCandidates[randomIndex];
+
+      // Translate random deck index to suit and value
+      const suit = this.mapIntToSuit(randomCard);
+      const value = randomCard % 13;
+
+      // Add to hand if candidate passes filter criteria
+      if (suits.indexOf(suit) > -1
+        && value >= minCard
+        && value <= maxCard
+      ) {
+        // Push card indices and card objects separately.
+        hand.push({
+          suit,
+          value: this.mapIntToCardValue(randomCard)
+        });
+      }
+
+      if (randomIndex === 0) {
+        handCandidates.shift();
+      } else if (randomIndex === (handCandidates.length - 1)) {
+        handCandidates.pop();
+      } else {
+        handCandidates = handCandidates.slice(0, randomIndex).concat(handCandidates.slice(randomIndex + 1, handCandidates.length));
+      }
+    } while(hand.length < cardsInHand);
+
+    return hand;
+  }
+
+  /**
+   * Translate a card's deck index to a suit.
+   * @param index Integer corresponding to a specific card in a collection of 1 or more standard playing card decks.
    */
   mapIntToSuit(index: number) {
-    // Normalize index if drawing from multiple decks.
+    /**
+     * Normalize index if drawing from multiple decks.
+     * e.g. 2 decks will have 2 entire sets of Spades:
+     * 2 Aces of Spades, index 12 and 64
+     *   12 % 52 = 12
+     *   64 % 52 = 12
+     */
     const normalizedIndex = index % 52;
 
     if (normalizedIndex >= 0 && normalizedIndex < 13) {
@@ -85,18 +105,31 @@ export class HandComponent implements OnChanges {
     }
   }
 
-  /*
+  /**
    * Translate a card's deck index to a face value.
+   * @param index Integer corresponding to a specific card in a collection of 1 or more standard playing card decks.
    */
   mapIntToCardValue(index: number) {
+    /**
+     * We don't need to normalize the index for card face value.
+     * Face values are always the same within suit boundaries.
+     * No matter how many decks we pull from, face value will always be index modulo 13.
+     */
     const noSuit = index % 13;
 
     let value;
     if (noSuit >= 0 && noSuit < 9) {
-      // Indices from 0 to 8 are just incremented by 2.
+      /**
+       * Indices from 0 to 8 are just incremented by 2.
+       * Face values 2 through 9.
+       */
       value = '' + (noSuit + 2);
+
     } else {
-      // Indices from 9 to 12 are face cards.
+      /**
+       * Indices from 9 to 12 are face cards.
+       * Face values Jack through Ace.
+       */
       switch (noSuit) {
         case 9:
           value = 'jack';
@@ -110,12 +143,13 @@ export class HandComponent implements OnChanges {
         case 12:
           value = 'ace';
           break;
-        
+
         // This shouldn't ever happen.
         default:
           value = null;
-          break;            
+          break;
       }
+
     }
 
     return value;
