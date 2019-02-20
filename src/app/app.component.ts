@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Filters } from './filters';
 import 'hammerjs';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -16,7 +17,7 @@ export class AppComponent {
   /**
    * Filters state.
    */
-  filters: Filters;
+  filters: Subject<Filters> = new Subject<Filters>();
 
   /**
    * Run on filter event.
@@ -25,10 +26,8 @@ export class AppComponent {
   recieveFilters($event) {
 
     /**
-     * Treat as immutable to update child input bindings on changes.
+     * Update app filters state with filter event.
      */
-    this.filters = {
-      ...$event
-    };
+    this.filters.next($event);
   }
 }

@@ -4,5 +4,5 @@
   </h1>
 
   <app-filters (filterEvent)="recieveFilters($event)"></app-filters>
-  <app-hand [filters]="filters"></app-hand>
+  <app-hand [filters]="filters | async"></app-hand>
 </div>

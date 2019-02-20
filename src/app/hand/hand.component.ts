@@ -14,8 +14,14 @@ import { Filters } from '../filters';
 })
 export class HandComponent {
 
+  /**
+   * Selected filters constraints for generating hand.
+   */
   @Input() filters: Filters;
 
+  /**
+   * Getter for generated hand, builds hand when accessed.
+   */
   public get currentHand(): Hand {
     if (this.filters != undefined) {
       const hand = this.buildHand();
@@ -83,6 +89,7 @@ export class HandComponent {
   /**
    * Translate a card's deck index to a suit.
    * @param index Integer corresponding to a specific card in a collection of 1 or more standard playing card decks.
+   * [TODO] deduplicate int-to-suit and int-to-face-value functionality here and in `filters.component.ts`.
    */
   mapIntToSuit(index: number) {
     /**
