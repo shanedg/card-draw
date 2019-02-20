@@ -1,10 +1,11 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { Filters } from '../filters';
 
 @Component({
   selector: 'app-filters',
   templateUrl: './filters.component.html',
-  styleUrls: ['./filters.component.css']
+  styleUrls: ['./filters.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FiltersComponent implements OnInit {
   selectedFilters: Filters = {
@@ -12,21 +13,23 @@ export class FiltersComponent implements OnInit {
     cardsInHand: 7,
     maxCardValue: 12,
     minCardValue: 0,
-    numDecks: 1
+    numDecks: 1,
   };
 
-  error: string|null;
+  error: string | null;
 
   constructor() { }
 
   ngOnInit() {
   }
 
-  // Send filter changes up and out to parent.
+  /**
+   * Emitted filter event.
+   */
   @Output() filterEvent = new EventEmitter<Filters>();
 
-  /*
-   * Emit filter event for interception of filter state by parent.
+  /**
+   * Wrap emit in validation that filters are possible to satisfy.
    */
   setFilter() {
     if (this.filtersSatisfiable(this.selectedFilters)) {
@@ -34,18 +37,31 @@ export class FiltersComponent implements OnInit {
     }
   }
 
-  /*
+  /**
    * Translate a card's deck index to a face value.
+   * @param index Index of card selected from 1 or more decks.
    */
-  formatFaceLabel(value: number | null) {
-    const noSuit = value % 13;
+  formatFaceLabel(index: number | null) {
+    /**
+     * Disregard suit, only need face value.
+     */
+    const noSuit = index % 13;
 
+    /**
+     * Card face value label to return.
+     */
     let label;
     if (noSuit >= 0 && noSuit < 9) {
-      // Indices from 0 to 8 are just incremented by 2.
+      /**
+       * Indices from 0 to 8 are just incremented by 2.
+       * Face values 2 through 9.
+       */
       label = '' + (noSuit + 2);
     } else {
-      // Indices from 9 to 12 are 'face' cards.
+      /**
+       * Indices from 9 to 12 are face cards.
+       * Face values Jack through Ace.
+       */
       switch (noSuit) {
         case 9:
           label = 'J';
@@ -59,10 +75,10 @@ export class FiltersComponent implements OnInit {
         case 12:
           label = 'A';
           break;
-        
+
         // This shouldn't ever happen.
         default:
-          value = null;
+          label = '';
           break;
       }
     }
@@ -70,8 +86,9 @@ export class FiltersComponent implements OnInit {
     return label;
   }
 
-  /*
-   * Test if possible to satisfy filters based on current filters state.
+  /**
+   * Test if possible to satisfy filters.
+   * @param filters Filters values object.
    */
   filtersSatisfiable(filters) {
     if (filters.minCardValue > filters.maxCardValue) {
@@ -98,22 +115,25 @@ export class FiltersComponent implements OnInit {
     return true;
   }
 
-  /*
-   * Get the maximum possible cards that could comprise a hand
-   * given the current filters state.
+  /**
+   * Get the maximum possible cards that could comprise a hand.
    */
   maxHandSize() {
     return this.selectedFilters.numDecks * this.selectedFilters.suits.length * ((this.selectedFilters.maxCardValue + 1) - this.selectedFilters.minCardValue);
   }
 
-  /*
+  /**
    * Keep the maximum selectable value of hand size
    * in sync with multi select/slider updates.
+   * @param $event Event emitted when filters update.
    */
   updateFilterSelections($event) {
     const maxHand = this.maxHandSize();
 
-    // Important to adjust actual `cardsInHand` var as well.
+    /**
+     * Automatically reduce the number of cards selected to draw
+     * if greater than the number it's currently possible to draw.
+     */
     if (this.selectedFilters.cardsInHand > maxHand) {
       this.selectedFilters.cardsInHand = maxHand;
     }
