@@ -16,7 +16,7 @@
   </mat-form-field>
 
   <strong>
-    Max card value: {{this.formatFaceLabel(selectedFilters.maxCardValue)}}
+    Max card value: {{this.playingCardsService.mapIndexToCardValue(selectedFilters.maxCardValue)}}
   </strong>
   <mat-slider
     [(ngModel)]="selectedFilters.maxCardValue"
@@ -26,12 +26,12 @@
     max="12"
     step="1"
     value="1"
-    [displayWith]="formatFaceLabel"
+    [displayWith]="playingCardsService.mapIndexToCardValueShort"
     (change)="updateFilterSelections($event)"
   ></mat-slider>
 
   <strong>
-    Min card value: {{this.formatFaceLabel(selectedFilters.minCardValue)}}
+    Min card value: {{this.playingCardsService.mapIndexToCardValue(selectedFilters.minCardValue)}}
   </strong>
   <mat-slider
     [(ngModel)]="selectedFilters.minCardValue"
@@ -41,7 +41,7 @@
     max="12"
     step="1"
     value="1"
-    [displayWith]="formatFaceLabel"
+    [displayWith]="playingCardsService.mapIndexToCardValueShort"
     (change)="updateFilterSelections($event)"
   ></mat-slider>
 
