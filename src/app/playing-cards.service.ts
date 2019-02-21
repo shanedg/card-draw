@@ -101,22 +101,24 @@ export class PlayingCardsService {
 
     if (index != null) {
 
+      const noSuit = index % 13;
+
       /**
        * Card face value label to return.
        */
       let label;
 
-      if (index < 9) {
+      if (noSuit < 9) {
         /**
          * Face values 2 through 10.
          */
-        label = '' + (2 + index);
+        label = '' + (2 + noSuit);
 
       } else {
         /**
          * Face values, Jack through Ace (capitalized first letter).
          */
-        switch (index) {
+        switch (noSuit) {
           case 9:
             label = 'J';
             break;
