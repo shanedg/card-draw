@@ -27,7 +27,11 @@ export class AppComponent {
 
     /**
      * Update app filters state with filter event.
+     * Note, it's important that the filters are always a new object;
+     * Allows a new, random hand to be drawn with identical filters.
      */
-    this.filters.next($event);
+    this.filters.next({
+      ...$event
+    });
   }
 }

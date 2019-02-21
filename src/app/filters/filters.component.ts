@@ -1,6 +1,8 @@
 import { Component, OnInit, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { Filters } from '../filters';
 
+import { PlayingCardsService } from '../playing-cards.service';
+
 @Component({
   selector: 'app-filters',
   templateUrl: './filters.component.html',
@@ -18,7 +20,7 @@ export class FiltersComponent implements OnInit {
 
   error: string | null;
 
-  constructor() { }
+  constructor(public playingCardsService: PlayingCardsService) { }
 
   ngOnInit() {
   }
@@ -35,55 +37,6 @@ export class FiltersComponent implements OnInit {
     if (this.filtersSatisfiable(this.selectedFilters)) {
       this.filterEvent.emit(this.selectedFilters);
     }
-  }
-
-  /**
-   * Translate a card's deck index to a face value.
-   * @param index Index of card selected from 1 or more decks.
-   */
-  formatFaceLabel(index: number | null) {
-    /**
-     * Disregard suit, only need face value.
-     */
-    const noSuit = index % 13;
-
-    /**
-     * Card face value label to return.
-     */
-    let label;
-    if (noSuit >= 0 && noSuit < 9) {
-      /**
-       * Indices from 0 to 8 are just incremented by 2.
-       * Face values 2 through 9.
-       */
-      label = '' + (noSuit + 2);
-    } else {
-      /**
-       * Indices from 9 to 12 are face cards.
-       * Face values Jack through Ace.
-       */
-      switch (noSuit) {
-        case 9:
-          label = 'J';
-          break;
-        case 10:
-          label = 'Q';
-          break;
-        case 11:
-          label = 'K';
-          break;
-        case 12:
-          label = 'A';
-          break;
-
-        // This shouldn't ever happen.
-        default:
-          label = '';
-          break;
-      }
-    }
-
-    return label;
   }
 
   /**
