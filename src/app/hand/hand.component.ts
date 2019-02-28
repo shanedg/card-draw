@@ -28,7 +28,7 @@ export class HandComponent {
    */
   public get currentHand(): Hand {
     if (this.filters != undefined) {
-      const hand = this.buildHand();
+      const hand = this.buildHand(this.filters);
 
       return {
         cards: hand,
@@ -43,21 +43,15 @@ export class HandComponent {
   /**
    * Generate a hand based on filter choices from UI.
    */
-  buildHand() {
-    const decks = this.filters.numDecks;
-    const suits = this.filters.suits;
-    const minCard = this.filters.minCardValue;
-    const maxCard = this.filters.maxCardValue;
-    const cardsInHand = this.filters.cardsInHand;
-
+  buildHand(options: Filters) {
     let handCandidates = [];
-    for (let i = 0; i < (decks * 52); i++) {
+    for (let i = 0; i < (options.numDecks * 52); i++) {
       handCandidates.push(i);
     }
 
     const hand = [];
 
-    do {
+    while(hand.length < options.cardsInHand && handCandidates.length > 0) {
       // Choose random deck index
       const randomIndex = Math.floor(Math.random() * handCandidates.length);
       const randomCard = handCandidates[randomIndex];
@@ -67,9 +61,9 @@ export class HandComponent {
       const value = randomCard % 13;
 
       // Add to hand if candidate passes filter criteria
-      if (suits.indexOf(suit) > -1
-        && value >= minCard
-        && value <= maxCard
+      if (options.suits.indexOf(suit) > -1
+        && value >= options.minCardValue
+        && value <= options.maxCardValue
       ) {
         // Push card indices and card objects separately.
         hand.push({
@@ -85,7 +79,7 @@ export class HandComponent {
       } else {
         handCandidates = handCandidates.slice(0, randomIndex).concat(handCandidates.slice(randomIndex + 1, handCandidates.length));
       }
-    } while(hand.length < cardsInHand);
+    }
 
     return hand;
   }
