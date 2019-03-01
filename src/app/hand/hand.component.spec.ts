@@ -3,6 +3,19 @@ import { HandComponent } from './hand.component';
 import { Filters } from '../filters';
 import { Card } from '../card';
 
+const INITIAL_CARDS_FILTER: Filters = {
+  suits: [
+    'spade',
+    'heart',
+    'club',
+    'diamond',
+  ],
+  cardsInHand: 7,
+  maxCardValue: 12,
+  minCardValue: 0,
+  numDecks: 1,
+};
+
 describe('HandComponent', () => {
   let component: HandComponent;
   let fixture: ComponentFixture<HandComponent>;
@@ -30,116 +43,154 @@ describe('HandComponent', () => {
   });
 
   it('should not return a null hand with filters defined', () => {
-    const defined: Filters = {
-      suits: [
-        'spade',
-        'heart',
-        'club',
-        'diamond',
-      ],
-      cardsInHand: 7,
-      maxCardValue: 12,
-      minCardValue: 0,
-      numDecks: 1,
-    };
+    const defined: Filters = Object.assign({}, INITIAL_CARDS_FILTER);
     component.filters = defined;
     const hand = component.currentHand;
     expect(hand.cards).not.toBeNull();
   });
 
-  /**
-   * [todo] more explicit tests around empty hand conditions
-   */
   it('should return an empty hand if choosing from 0 decks', () => {
-    const noDecks: Filters = {
-      suits: [
-        'spade',
-        'heart',
-        'club',
-        'diamond',
-      ],
-      cardsInHand: 7,
-      maxCardValue: 12,
-      minCardValue: 0,
+    const noDecks: Filters = Object.assign({}, INITIAL_CARDS_FILTER, {
       numDecks: 0,
-    };
+    });
     const hand = component.buildHand(noDecks);
     expect(hand).toEqual([]);
   });
 
-  /**
-   * [todo] write suite to test for drawing all possible size hands from 1 deck
-   */
-  it('should return 1 card if choosing 1 card with permissive filters', () => {
-    const draw1Card: Filters = {
-      suits: [
-        'spade',
-        'heart',
-        'club',
-        'diamond',
-      ],
-      cardsInHand: 1,
-      maxCardValue: 12,
-      minCardValue: 0,
-      numDecks: 1,
-    };
-    const hand = component.buildHand(draw1Card);
-    expect(hand.length).toEqual(1);
+  it('should return an empty hand if min > max', () => {
+    const noDecks: Filters = Object.assign({}, INITIAL_CARDS_FILTER, {
+      maxCardValue: 5,
+      minCardValue: 7,
+    });
+    const hand = component.buildHand(noDecks);
+    expect(hand).toEqual([]);
   });
 
-  /**
-   * [todo] see above
-   */
-  it('should return 52 cards if choosing 52 cards with permissive filters', () => {
-    const entireDeck: Filters = {
-      suits: [
-        'spade',
-        'heart',
-        'club',
-        'diamond',
-      ],
-      cardsInHand: 52,
-      maxCardValue: 12,
-      minCardValue: 0,
-      numDecks: 1,
-    };
-    const hand = component.buildHand(entireDeck);
+  it('should return x cards if choosing x cards with permissive filters, 0-52', () => {
+    for (let i = 0; i <= 52; i++) {
+      const drawXCards: Filters = Object.assign(INITIAL_CARDS_FILTER, {
+        cardsInHand: i,
+      });
+      const hand = component.buildHand(drawXCards);
+      expect(hand.length).toEqual(i);
+    }
+  });
+
+  it('should return only 52 cards if choosing more than 52 cards with permissive filters', () => {
+    const entireDeckPlus1: Filters = Object.assign({}, INITIAL_CARDS_FILTER, {
+      cardsInHand: 53,
+    });
+    const hand = component.buildHand(entireDeckPlus1);
     expect(hand.length).toEqual(52);
   });
 
-  /**
-    * [TODO] write suite to test each suite for cards of only 1 suit when only 1 suit selected
-    */
-  it('should return cards of 1 suit if only 1 suit is selected', () => {
-    const testSuit = 'spade';
-    const only1Suit: Filters = {
-      suits: [
-        testSuit,
-      ],
-      cardsInHand: 7,
-      maxCardValue: 12,
-      minCardValue: 0,
-      numDecks: 1,
-    };
+  it('should return only x cards if min and max are equal and x suits are selected', () => {
+    const suitCount = INITIAL_CARDS_FILTER.suits.length;
 
-    let passes = true;
-    const hand = component.buildHand(only1Suit);
-    hand.forEach((card: Card, i: number) => {
-      if (card.suit !== testSuit) {
-        passes = false;
+    for (let i = 0; i < suitCount; i++) {
+      const tempSuits = INITIAL_CARDS_FILTER.suits.slice(i);
+      const minMaxEqual: Filters = Object.assign({}, INITIAL_CARDS_FILTER, {
+        maxCardValue: 7,
+        minCardValue: 7,
+        suits: tempSuits,
+      });
+
+      const hand = component.buildHand(minMaxEqual);
+      expect(hand.length).toEqual(tempSuits.length);
+    }
+  });
+
+  it('should return only cards of suit x if only suit x is selected', () => {
+    INITIAL_CARDS_FILTER.suits.forEach((suit: string) => {
+      const singleSuitAtATime: Filters = Object.assign({}, INITIAL_CARDS_FILTER, {
+        suits: [
+          suit,
+        ],
+      });
+
+      let matchesSuit = true;
+      const hand = component.buildHand(singleSuitAtATime);
+      hand.forEach((card: Card) => {
+        if (card.suit !== suit) {
+          matchesSuit = false;
+        }
+      });
+
+      expect(matchesSuit).toBe(true);
+    });
+  });
+
+  it('should return no duplicates within any suit in a single deck', () => {
+    INITIAL_CARDS_FILTER.suits.forEach((suit: string, index: number) => {
+      const singleSuitAtATime: Filters = Object.assign({}, INITIAL_CARDS_FILTER, {
+        suits: [
+          suit,
+        ],
+      });
+
+      const checked: number[] = [];
+      const hand = component.buildHand(singleSuitAtATime);
+      let noDuplicates = true;
+      hand.forEach((card: Card) => {
+        if (checked.indexOf(card.value) === -1) {
+          checked.push(card.value);
+        } else {
+          noDuplicates = false;
+        }
+      });
+
+      expect(noDuplicates).toBe(true);
+    });
+  });
+
+  it('should return no duplicates within a deck', () => {
+    const allCards: Filters = Object.assign({}, INITIAL_CARDS_FILTER, {
+      cardsInHand: 52,
+    });
+
+    const checked: string[] = [];
+    const hand = component.buildHand(allCards);
+    let noDuplicates = true;
+    hand.forEach((card: Card) => {
+      const cardKey = `${card.suit}:${card.value}`;
+      if (checked.indexOf(cardKey) === -1) {
+        checked.push(cardKey);
+      } else {
+        noDuplicates = false;
       }
     });
 
-    expect(passes).toBe(true);
+    expect(noDuplicates).toBe(true);
   });
 
-  /**
-   * [TODO] test for duplicates
-   * 1. within a suit
-   * 2. within a deck
-   * 3. ceiling for duplicates in multiple decks?
-   *
-   * write suite to test (1) for each suit
-   */
+  it('should return x of a card y within x decks', () => {
+    const howManyDecks = 10;
+    const oneSuit = 'spade';
+    const cardValue = 7;
+
+    const twoDecks: Filters = Object.assign({}, INITIAL_CARDS_FILTER, {
+      cardsInHand: howManyDecks,
+      maxCardValue: cardValue,
+      minCardValue: cardValue,
+      numDecks: howManyDecks,
+      suits: [
+        oneSuit
+      ],
+    });
+
+    const checked: string[] = [];
+    const hand = component.buildHand(twoDecks);
+    let numDuplicates = 0;
+    hand.forEach((card: Card) => {
+      const cardKey = `${card.suit}:${card.value}`;
+      if (checked.indexOf(cardKey) === -1) {
+        checked.push(cardKey);
+      } else {
+        numDuplicates++;
+      }
+    });
+
+    expect(numDuplicates).toEqual(howManyDecks - 1);
+  });
 
 });

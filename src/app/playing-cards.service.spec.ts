@@ -71,7 +71,7 @@ const SUIT_FACES_SHORT = [
  * @param service Instance of the service to test against.
  * @param suit Suit to test.
  */
-function testMapIndexToCardSuit(service: PlayingCardsService, suit: 'spade' | 'heart' | 'club' | 'diamond') {
+const testMapIndexToCardSuit = (service: PlayingCardsService, suit: 'spade' | 'heart' | 'club' | 'diamond') => {
   /**
    * Starting index of suit range.
    */
@@ -91,14 +91,14 @@ function testMapIndexToCardSuit(service: PlayingCardsService, suit: 'spade' | 'h
     expect(service.mapIndexToCardSuit(suitStart)).toBe(suit);
     expect(service.mapIndexToCardSuit(suitEnd)).toBe(suit);
   }
-}
+};
 
 /**
  * Test `mapIndexToCardValue`
  * @param service Instance of the service to test against.
  * @param suit Suit to test.
  */
-function testMapIndexToCardValue(service: PlayingCardsService, suit: 'spade' | 'heart' | 'club' | 'diamond') {
+const testMapIndexToCardValue = (service: PlayingCardsService, suit: 'spade' | 'heart' | 'club' | 'diamond') => {
   const suitStartIndex = DECK_SUITS[suit] * SUIT_SIZE;
 
   for (let i = 0; i < DECKS_TO_TEST; i++) {
@@ -109,7 +109,7 @@ function testMapIndexToCardValue(service: PlayingCardsService, suit: 'spade' | '
       expect(service.mapIndexToCardValue(suitIndex)).toBe(SUIT_FACES[j]);
     }
   }
-}
+};
 
 /**
  * Test `mapIndexToCardValueShort`
@@ -117,11 +117,11 @@ function testMapIndexToCardValue(service: PlayingCardsService, suit: 'spade' | '
  * @param suit Suit to test.
  * [TODO] deduplicate faces/short faces, this is not DRY.
  */
-function testMapIndexToCardValueShort(service: PlayingCardsService) {
+const testMapIndexToCardValueShort = (service: PlayingCardsService) => {
   for (let cardIndex = 0; cardIndex < (DECK_SIZE * DECKS_TO_TEST); cardIndex++) {
     expect(service.mapIndexToCardValueShort(cardIndex)).toBe(SUIT_FACES_SHORT[cardIndex % SUIT_SIZE]);
   }
-}
+};
 
 describe('PlayingCardsService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
