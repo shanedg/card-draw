@@ -65,3 +65,10 @@
   <button mat-raised-button color="accent" (click)="setFilter()">Draw Hand</button>
 </div>
 
+<!-- debug filter values here -->
+<pre>
+<strong>filters</strong>
+{{ selectedFilters | json }}
+<strong>error</strong>
+{{ this.error | json }}
+</pre>
