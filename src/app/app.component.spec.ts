@@ -1,7 +1,11 @@
 import { TestBed, async } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSliderModule } from '@angular/material/slider';
+import {
+  MatButtonModule,
+  MatInputModule,
+  MatSelectModule,
+  MatSliderModule,
+} from '@angular/material';
 import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { FiltersComponent } from './filters/filters.component';
@@ -13,17 +17,19 @@ describe('AppComponent', () => {
       imports: [
         BrowserAnimationsModule,
         FormsModule,
+        MatButtonModule,
+        MatInputModule,
         MatSelectModule,
-        MatSliderModule
+        MatSliderModule,
       ],
       declarations: [
         AppComponent,
         FiltersComponent,
-        HandComponent
+        HandComponent,
       ],
     }).compileComponents();
   }));
-  it('should create the app', async(() => {
+  it('smoke: should create the app', async(() => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.debugElement.componentInstance;
     expect(app).toBeTruthy();

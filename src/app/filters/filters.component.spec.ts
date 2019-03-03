@@ -1,8 +1,12 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSliderModule } from '@angular/material/slider';
+import {
+  MatButtonModule,
+  MatInputModule,
+  MatSelectModule,
+  MatSliderModule,
+} from '@angular/material';
 import { FiltersComponent } from './filters.component';
 import { allocHostVars } from '@angular/core/src/render3';
 import { Filters } from '../filters';
@@ -16,8 +20,10 @@ describe('FiltersComponent', () => {
       imports: [
         BrowserAnimationsModule,
         FormsModule,
+        MatButtonModule,
+        MatInputModule,
         MatSelectModule,
-        MatSliderModule
+        MatSliderModule,
       ],
       declarations: [ FiltersComponent ]
     })
@@ -30,10 +36,7 @@ describe('FiltersComponent', () => {
     fixture.detectChanges();
   });
 
-  /**
-   * test: component smoke
-   */
-  it('should create', () => {
+  it('smoke: should create', () => {
     expect(component).toBeTruthy();
   });
 
