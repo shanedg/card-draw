@@ -2,19 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HandComponent } from './hand.component';
 import { Filters } from '../filters';
 import { Card } from '../card';
-
-const INITIAL_CARDS_FILTER: Filters = {
-  suits: [
-    'spade',
-    'heart',
-    'club',
-    'diamond',
-  ],
-  cardsInHand: 7,
-  maxCardValue: 12,
-  minCardValue: 0,
-  numDecks: 1,
-};
+import { INITIAL_CARDS_FILTER } from '../filters/filters.constants';
 
 describe('HandComponent', () => {
   let component: HandComponent;
@@ -33,7 +21,7 @@ describe('HandComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('smoke: should create', () => {
     expect(component).toBeTruthy();
   });
 
