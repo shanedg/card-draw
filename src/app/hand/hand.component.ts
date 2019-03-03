@@ -5,7 +5,6 @@ import {
 } from '@angular/core';
 import { Hand } from '../hand';
 import { Filters } from '../filters';
-
 import { PlayingCardsService } from '../playing-cards.service';
 
 @Component({

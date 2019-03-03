@@ -1,12 +1,16 @@
 <div class="filters-component">
   <strong>Number of decks to draw from:</strong>
-  <input [(ngModel)]="selectedFilters.numDecks" />
+  <mat-form-field>
+    <input matInput
+    [(ngModel)]="selectedFilters.numDecks"
+    value="1"
+    >
+  </mat-form-field>
   <strong>Select suits:</strong>
   <mat-form-field>
     <mat-select
       [(ngModel)]="selectedFilters.suits"
       multiple
-      (selectionChange)="updateFilterSelections($event)"
     >
       <mat-option value="spade">spade</mat-option>
       <mat-option value="heart">heart</mat-option>
@@ -27,7 +31,6 @@
     step="1"
     value="1"
     [displayWith]="playingCardsService.mapIndexToCardValueShort"
-    (change)="updateFilterSelections($event)"
   ></mat-slider>
 
   <strong>
@@ -42,7 +45,6 @@
     step="1"
     value="1"
     [displayWith]="playingCardsService.mapIndexToCardValueShort"
-    (change)="updateFilterSelections($event)"
   ></mat-slider>
 
   <strong>Hand size to draw: {{selectedFilters.cardsInHand}} cards</strong>
@@ -51,15 +53,22 @@
     thumbLabel
     tickInterval="1"
     min="1"
-    max="{{this.maxHandSize()}}"
+    max="{{this.calcMaxHandSize(selectedFilters)}}"
     step="1"
     value="1"
   ></mat-slider>
 
-  <strong *ngIf="this.error != null" style="color: red">*{{this.error}}</strong>
+  <ng-container *ngFor="let e of error">
+    <strong style="color: red">*{{ e }}</strong>
+  </ng-container>
 
-  <!-- Debugging -->
-  <!-- <p>suits: {{ selectedFilters.suits}}, # cards: {{ selectedFilters.cardsInHand}}, max card value: {{ selectedFilters.maxCardValue}}, min card value: {{ selectedFilters.minCardValue}}<br>error: {{this.error}}</p> -->
-
-  <button (click)="setFilter()">Draw Hand</button>
+  <button mat-raised-button color="accent" (click)="setFilter()">Draw Hand</button>
 </div>
+
+<!-- debug filter values here -->
+<pre>
+<strong>filters</strong>
+{{ selectedFilters | json }}
+<strong>error</strong>
+{{ this.error | json }}
+</pre>
