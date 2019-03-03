@@ -8,8 +8,12 @@ import {
   MatSliderModule,
 } from '@angular/material';
 import { FiltersComponent } from './filters.component';
-import { allocHostVars } from '@angular/core/src/render3';
-import { Filters } from '../filters';
+import {
+  INITIAL_CARDS_FILTER,
+  ERROR_MESSAGE_MIN_GT_MAX,
+  ERROR_MESSAGE_HAND_NOT_POSSIBLE,
+  ERROR_MESSAGE_NO_SUITS,
+} from './filters.constants';
 
 describe('FiltersComponent', () => {
   let component: FiltersComponent;
@@ -40,169 +44,75 @@ describe('FiltersComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  /**
-   * test: `filtersSatisfiable`
-   */
   it('should validate filter initial state', () => {
-    const goodFilter: Filters = {
-      suits: [
-        'spade',
-        'heart',
-        'club',
-        'diamond',
-      ],
-      cardsInHand: 7,
-      maxCardValue: 12,
-      minCardValue: 0,
-      numDecks: 1,
-    };
+    const goodFilter = Object.assign({}, INITIAL_CARDS_FILTER);
     expect(component.filtersSatisfiable(goodFilter)).toBe(true);
   });
 
-  it('should clear errors when valid', () => {
-    const goodFilter: Filters = {
-      suits: [
-        'spade',
-        'heart',
-        'club',
-        'diamond',
-      ],
-      cardsInHand: 7,
-      maxCardValue: 12,
-      minCardValue: 0,
-      numDecks: 1,
-    };
-    component.error = 'no good, try again';
+  it('side effect: should clear errors when valid', () => {
+    const goodFilter = Object.assign({}, INITIAL_CARDS_FILTER);
+    component.error = ['no good, try again'];
     component.filtersSatisfiable(goodFilter);
-    expect(component.error).toEqual(null);
+    expect(component.error).toEqual([]);
   });
 
   it('should invalidate no suits selected', () => {
-    const noSuits: Filters = {
+    const noSuits = Object.assign({}, INITIAL_CARDS_FILTER, {
       suits: [],
-      cardsInHand: 7,
-      maxCardValue: 12,
-      minCardValue: 0,
-      numDecks: 1,
-    };
+    });
     expect(component.filtersSatisfiable(noSuits)).toBe(false);
   });
 
-  it('should report an error when no suits selected', () => {
-    const noSuits: Filters = {
+  it('side effect: should report an error when no suits selected', () => {
+    const noSuits = Object.assign({}, INITIAL_CARDS_FILTER, {
       suits: [],
-      cardsInHand: 7,
-      maxCardValue: 12,
-      minCardValue: 0,
-      numDecks: 1,
-    };
+    });
     component.filtersSatisfiable(noSuits);
-    expect(component.error).toBe('no suits selected');
+    expect(component.error).toContain(ERROR_MESSAGE_NO_SUITS);
   });
 
   it('should invalidate min greater than max', () => {
-    const minGreaterThanMax: Filters = {
-      suits: [
-        'spade',
-        'heart',
-        'club',
-        'diamond',
-      ],
-      cardsInHand: 7,
+    const minGreaterThanMax = Object.assign({}, INITIAL_CARDS_FILTER, {
       maxCardValue: 5,
       minCardValue: 6,
-      numDecks: 1,
-    };
+    });
     expect(component.filtersSatisfiable(minGreaterThanMax)).toBe(false);
   });
 
-  it('should report an error when min greater than max', () => {
-    const minGreaterThanMax: Filters = {
-      suits: [
-        'spade',
-        'heart',
-        'club',
-        'diamond',
-      ],
-      cardsInHand: 7,
+  it('side effect: should report an error when min greater than max', () => {
+    const minGreaterThanMax = Object.assign({}, INITIAL_CARDS_FILTER, {
       maxCardValue: 5,
       minCardValue: 6,
-      numDecks: 1,
-    };
+    });
     component.filtersSatisfiable(minGreaterThanMax);
-    expect(component.error).toBe('min card value must be less than or equal to max card value');
+    expect(component.error).toContain(ERROR_MESSAGE_MIN_GT_MAX);
   });
 
   it('should invalidate an empty hand', () => {
-    const handEmpty: Filters = {
-      suits: [
-        'spade',
-        'heart',
-        'club',
-        'diamond',
-      ],
-      cardsInHand: 7,
+    const handEmpty = Object.assign({}, INITIAL_CARDS_FILTER, {
       maxCardValue: 5,
       minCardValue: 6,
       numDecks: 0,
-    };
+    });
     component.selectedFilters = handEmpty;
-    expect(component.maxHandSize()).toBeLessThanOrEqual(0);
+    expect(component.calcMaxHandSize(handEmpty)).toBeLessThanOrEqual(0);
   });
 
-  it('should correctly determine when max hand size possible is <= 0', () => {
-    const handEmpty: Filters = {
-      suits: [
-        'spade',
-        'heart',
-        'club',
-        'diamond',
-      ],
-      cardsInHand: 7,
-      maxCardValue: 5,
-      minCardValue: 6,
+  it('should determine when max hand size possible is <= 0', () => {
+    const handEmpty = Object.assign({}, INITIAL_CARDS_FILTER, {
       numDecks: 0,
-    };
+    });
     component.selectedFilters = handEmpty;
-    expect(component.maxHandSize()).toBeLessThanOrEqual(0);
+    expect(component.calcMaxHandSize(handEmpty)).toBeLessThanOrEqual(0);
   });
 
-  /**
-   * [TODO] clean/async way to wait for or force the component to update
-   */
-  // it('should dynamically update cards in hand when max hand size possible is < cards in hand', () => {
-  //   const goodFilter: Filters = {
-  //     suits: [
-  //       'spade',
-  //       'heart',
-  //       'club',
-  //       'diamond',
-  //     ],
-  //     cardsInHand: 7,
-  //     maxCardValue: 12,
-  //     minCardValue: 0,
-  //     numDecks: 1,
-  //   };
-
-  //   const handTooLarge: Filters = {
-  //     suits: [
-  //       'spade',
-  //     ],
-  //     cardsInHand: 5,
-  //     maxCardValue: 5,
-  //     minCardValue: 5,
-  //     numDecks: 1,
-  //   };
-
-  //   component.selectedFilters = goodFilter;
-  //   component.updateFilterSelections(handTooLarge);
-
-  //   // [TODO] call `dispatchEvent()` ??
-  //   // target.dispatchEvent(newEvent('input'));
-
-  //   fixture.detectChanges();
-  //   expect(component.selectedFilters.cardsInHand).toEqual(4);
-
-  // });
+  it('side effect: should report an error when max hand size possible is <= 0', () => {
+    const handEmpty = Object.assign({}, INITIAL_CARDS_FILTER, {
+      numDecks: 0,
+    });
+    component.selectedFilters = handEmpty;
+    component.filtersSatisfiable(handEmpty);
+    expect(component.error).toContain(ERROR_MESSAGE_HAND_NOT_POSSIBLE);
+  });
 
 });

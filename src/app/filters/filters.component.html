@@ -53,12 +53,14 @@
     thumbLabel
     tickInterval="1"
     min="1"
-    max="{{this.maxHandSize()}}"
+    max="{{this.calcMaxHandSize(selectedFilters)}}"
     step="1"
     value="1"
   ></mat-slider>
 
-  <strong *ngIf="this.error != null" style="color: red">*{{this.error}}</strong>
+  <ng-container *ngFor="let e of error">
+    <strong style="color: red">*{{ e }}</strong>
+  </ng-container>
 
   <button mat-raised-button color="accent" (click)="setFilter()">Draw Hand</button>
 </div>

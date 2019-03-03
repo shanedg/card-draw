@@ -2,6 +2,12 @@ import { Component, OnInit, Output, EventEmitter, ChangeDetectionStrategy } from
 import { Filters } from '../filters';
 
 import { PlayingCardsService } from '../playing-cards.service';
+import {
+  INITIAL_CARDS_FILTER,
+  ERROR_MESSAGE_MIN_GT_MAX,
+  ERROR_MESSAGE_HAND_NOT_POSSIBLE,
+  ERROR_MESSAGE_NO_SUITS,
+} from './filters.constants';
 
 @Component({
   selector: 'app-filters',
@@ -10,19 +16,26 @@ import { PlayingCardsService } from '../playing-cards.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FiltersComponent implements OnInit {
-  selectedFilters: Filters = {
-    suits: ['spade','heart','club','diamond'],
-    cardsInHand: 7,
-    maxCardValue: 12,
-    minCardValue: 0,
-    numDecks: 1,
-  };
+  /**
+   * Filters to apply to drawn hand.
+   */
+  selectedFilters: Filters;
 
-  error: string | null;
+  /**
+   * Filtering errors.
+   */
+  error: string[] = [];
+
+  /**
+   * Number of cards available to draw based on filters.
+   */
+  maxHandSize: number;
 
   constructor(public playingCardsService: PlayingCardsService) { }
 
   ngOnInit() {
+    this.selectedFilters = Object.assign({}, INITIAL_CARDS_FILTER);
+    this.maxHandSize = this.calcMaxHandSize(this.selectedFilters);
   }
 
   /**
@@ -31,7 +44,7 @@ export class FiltersComponent implements OnInit {
   @Output() filterEvent = new EventEmitter<Filters>();
 
   /**
-   * Wrap emit in validation that filters are possible to satisfy.
+   * Only emit if filters are satisfiable.
    */
   setFilter() {
     if (this.filtersSatisfiable(this.selectedFilters)) {
@@ -43,52 +56,48 @@ export class FiltersComponent implements OnInit {
    * Test if possible to satisfy filters.
    * @param filters Filters values object.
    */
-  filtersSatisfiable(filters) {
+  filtersSatisfiable(filters: Filters) {
+    const errors = [];
+
     if (filters.minCardValue > filters.maxCardValue) {
-      this.error = 'min card value must be less than or equal to max card value';
-      return false;
+      if (errors.indexOf(ERROR_MESSAGE_MIN_GT_MAX) === -1) {
+        errors.push(ERROR_MESSAGE_MIN_GT_MAX);
+      }
     }
     if (filters.suits.length === 0) {
-      this.error = 'no suits selected';
-      return false;
+      if (errors.indexOf(ERROR_MESSAGE_NO_SUITS) === -1) {
+        errors.push(ERROR_MESSAGE_NO_SUITS);
+      }
     }
 
     /*
-     * This error handling not necessary with dynamic hand-size selection.
-     * BUT important while debugging to keep unsatisfiable filter conditions
-     * in the do-while loop from locking up the browser.
+     * This isn't strictly necessary with dynamic hand-size selection.
+     * However, it is important while debugging to keep unsatisfiable
+     * filters from reaching the do-while loop and locking up the browser.
      */
-    // const maxHandSize = this.maxHandSize();
-    // if (filters.cardsInHand > maxHandSize) {
-    //   this.error = 'not possible to draw that many cards with current filters';
-    //   return false;
-    // }
+    const maxHandSize = this.calcMaxHandSize(filters);
+    if (filters.cardsInHand > maxHandSize) {
+      if (errors.indexOf(ERROR_MESSAGE_HAND_NOT_POSSIBLE) === -1) {
+        errors.push(ERROR_MESSAGE_HAND_NOT_POSSIBLE);
+      }
+    }
 
-    this.error = null;
+    this.error = [].concat(errors);
+
+    if (errors.length > 0) {
+      return false;
+    }
+
     return true;
   }
 
   /**
-   * Get the maximum possible cards that could comprise a hand.
+   * Calculate the number of cards possible to draw based on filters.
+   * @param filters Filters to evaluate max hand size against.
    */
-  maxHandSize() {
-    return this.selectedFilters.numDecks * this.selectedFilters.suits.length * ((this.selectedFilters.maxCardValue + 1) - this.selectedFilters.minCardValue);
+  calcMaxHandSize(filters: Filters) {
+    const max = filters.numDecks * filters.suits.length * ((filters.maxCardValue + 1) - filters.minCardValue);
+    return max;
   }
 
-  /**
-   * Keep the maximum selectable value of hand size
-   * in sync with multi select/slider updates.
-   * @param $event Event emitted when filters update.
-   */
-  updateFilterSelections($event) {
-    const maxHand = this.maxHandSize();
-
-    /**
-     * Automatically reduce the number of cards selected to draw
-     * if greater than the number it's currently possible to draw.
-     */
-    if (this.selectedFilters.cardsInHand > maxHand) {
-      this.selectedFilters.cardsInHand = maxHand;
-    }
-  }
 }
