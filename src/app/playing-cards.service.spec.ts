@@ -1,70 +1,18 @@
 import { TestBed } from '@angular/core/testing';
 
 import { PlayingCardsService } from './playing-cards.service';
+import {
+  DECK_SIZE,
+  SUIT_FACES,
+  SUIT_FACES_SHORT,
+  SUIT_SIZE,
+  DECK_SUITS,
+} from './playing-cards.constants';
 
 /**
- * Range of concatenated playing card decks to test against.
+ * Number of concatenated playing card decks to test against.
  */
 const DECKS_TO_TEST = 10;
-
-/**
- * Number of playing cards in a standard deck.
- */
-const DECK_SIZE = 52;
-
-/**
- * Number of playing cards per suit.
- */
-const SUIT_SIZE = 13;
-
-/**
- * Possible suit values.
- */
-enum DECK_SUITS {
-  spade,
-  heart,
-  club,
-  diamond,
-};
-
-/**
- * Possible face values.
- */
-const SUIT_FACES = [
-  '2',
-  '3',
-  '4',
-  '5',
-  '6',
-  '7',
-  '8',
-  '9',
-  '10',
-  'jack',
-  'queen',
-  'king',
-  'ace',
-];
-
-/**
- * Possible short face values.
- * [TODO] deduplicate faces/short faces, this is not DRY.
- */
-const SUIT_FACES_SHORT = [
-  '2',
-  '3',
-  '4',
-  '5',
-  '6',
-  '7',
-  '8',
-  '9',
-  '10',
-  'J',
-  'Q',
-  'K',
-  'A',
-];
 
 /**
  * Test `mapIndexToCardSuit`
@@ -129,7 +77,7 @@ describe('PlayingCardsService', () => {
   /**
    * test: service smoke
    */
-  it('should be created', () => {
+  it('smoke: should be created', () => {
     const service: PlayingCardsService = TestBed.get(PlayingCardsService);
     expect(service).toBeTruthy();
   });
@@ -137,22 +85,22 @@ describe('PlayingCardsService', () => {
   /**
    * test: `mapIndexToCardSuit`
    */
-  it('should correctly map spade card suits', () => {
+  it('should map spade suits', () => {
     const service: PlayingCardsService = TestBed.get(PlayingCardsService);
     testMapIndexToCardSuit(service, 'spade');
   });
 
-  it('should correctly map heart card suits', () => {
+  it('should map heart suits', () => {
     const service: PlayingCardsService = TestBed.get(PlayingCardsService);
     testMapIndexToCardSuit(service, 'heart');
   });
 
-  it('should correctly map club card suits', () => {
+  it('should map club suits', () => {
     const service: PlayingCardsService = TestBed.get(PlayingCardsService);
     testMapIndexToCardSuit(service, 'club');
   });
 
-  it('should correctly map diamond card suits', () => {
+  it('should map diamond suits', () => {
     const service: PlayingCardsService = TestBed.get(PlayingCardsService);
     testMapIndexToCardSuit(service, 'diamond');
   });
@@ -160,22 +108,22 @@ describe('PlayingCardsService', () => {
   /**
    * test: `mapIndexToCardValue`
    */
-  it('should correctly map spade card faces', () => {
+  it('should map spade face values', () => {
     const service: PlayingCardsService = TestBed.get(PlayingCardsService);
     testMapIndexToCardValue(service, 'spade');
   });
 
-  it('should correctly map heart card faces', () => {
+  it('should map heart face values', () => {
     const service: PlayingCardsService = TestBed.get(PlayingCardsService);
     testMapIndexToCardValue(service, 'heart');
   });
 
-  it('should correctly map club card faces', () => {
+  it('should map club face values', () => {
     const service: PlayingCardsService = TestBed.get(PlayingCardsService);
     testMapIndexToCardValue(service, 'club');
   });
 
-  it('should correctly map diamond card faces', () => {
+  it('should map diamond face values', () => {
     const service: PlayingCardsService = TestBed.get(PlayingCardsService);
     testMapIndexToCardValue(service, 'diamond');
   });
@@ -183,7 +131,7 @@ describe('PlayingCardsService', () => {
   /**
    * test: `mapIndexToCardValueShort`
    */
-  it('should correctly map short card faces', () => {
+  it('should map short face values', () => {
     const service: PlayingCardsService = TestBed.get(PlayingCardsService);
     testMapIndexToCardValueShort(service);
   });
